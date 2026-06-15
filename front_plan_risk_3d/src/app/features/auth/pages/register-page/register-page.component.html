@@ -1,0 +1,119 @@
+<div class="h-full w-full flex flex-col animate-fade-in bg-[#0b0f19]">
+  <!-- Sección con fondo y altura calculada -->
+  <section class="relative flex-1 bg-cover bg-center bg-[url(assets/casa.png)] overflow-hidden"
+    style="min-height: calc(100svh - 8rem);">
+    
+    <!-- Capa oscura + blur + ambient light glow -->
+    <div class="absolute inset-0 bg-[#0a0f1d]/90 backdrop-blur-[4px]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full filter blur-[120px] pointer-events-none"></div>
+
+    <!-- Contenedor scrollable en móviles -->
+    <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 py-8 sm:px-6">
+      
+      <!-- Card de Registro -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"
+        class="w-full max-w-md overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10 transition-all hover:border-amber-500/30">
+        
+        <!-- Logo / Marca -->
+        <div class="flex flex-col items-center mb-8">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-amber-500/20 mb-3 animate-pulse">
+            P
+          </div>
+          <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">Crea tu cuenta en</h2>
+          <h1 class="text-2xl font-black text-white tracking-tight mt-1">Plan Risk 3D</h1>
+        </div>
+
+        <!-- Campo: Nombre -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="name">Nombre</label>
+          <input formControlName="nombre" type="text" id="name"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            placeholder="Juan" />
+        </div>
+
+        <!-- Campo: Apellido -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="apellido">Apellido</label>
+          <input formControlName="apellido" type="text" id="apellido"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            placeholder="Pérez" />
+        </div>
+
+        <!-- Campo: Correo -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="email">Correo electrónico</label>
+          <input formControlName="email" type="email" id="email"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            placeholder="tu@correo.com" />
+        </div>
+
+        <!-- Campo: Contraseña -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="password">Contraseña</label>
+          <input formControlName="password" type="password" id="password"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            placeholder="••••••••" />
+        </div>
+
+        <!-- Campo: Teléfono -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="telefono">Teléfono / Celular</label>
+          <input formControlName="telefono" type="text" id="telefono"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            placeholder="76543210" />
+        </div>
+
+        <!-- Campo: Profesión -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="profesion">Profesión</label>
+          <select formControlName="profesion" id="profesion"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 cursor-pointer">
+            <option value="estudiante" class="bg-slate-900 text-white">Estudiante</option>
+            <option value="profesional" class="bg-slate-900 text-white">Profesional</option>
+            <option value="otro" class="bg-slate-900 text-white">Otro</option>
+          </select>
+        </div>
+
+        <!-- Campo: Fecha de Nacimiento -->
+        <div class="mb-6">
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="fecha_nacimiento">Fecha de Nacimiento</label>
+          <input formControlName="fecha_nacimiento" type="date" id="fecha_nacimiento"
+            class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
+            style="color-scheme: dark;" />
+        </div>
+
+        <!-- Checkbox de Políticas -->
+        <div class="mb-6 flex items-start gap-2.5">
+          <input 
+            type="checkbox" 
+            id="acceptPolicies" 
+            formControlName="acepta_politicas"
+            class="mt-1 h-4 w-4 rounded border-slate-800 bg-slate-950/40 text-amber-500 focus:ring-amber-500/20 cursor-pointer" 
+          />
+          <label for="acceptPolicies" class="text-xs text-slate-400 leading-normal select-none">
+            Acepto los 
+            <a routerLink="/terms" target="_blank" class="text-amber-400 hover:underline font-semibold">Términos y Condiciones</a> 
+            y la 
+            <a routerLink="/privacy" target="_blank" class="text-amber-400 hover:underline font-semibold">Política de Privacidad</a> 
+            de Plan Risk 3D.
+          </label>
+        </div>
+
+        <!-- Botón registrar -->
+        <button type="submit"
+          [disabled]="registerForm.invalid"
+          class="mb-6 w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-500/10 hover:shadow-amber-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all transform hover:-translate-y-0.5 duration-200">
+          REGISTRARSE
+        </button>
+
+        <!-- Links inferiores -->
+        <div class="mt-2 flex items-center justify-between text-xs border-t border-slate-800/80 pt-6">
+          <a routerLink="/login"
+            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">¿Ya tienes cuenta? Ingresa</a>
+          <a routerLink="/home"
+            class="text-slate-400 hover:text-white transition duration-150">Volver a Inicio</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>

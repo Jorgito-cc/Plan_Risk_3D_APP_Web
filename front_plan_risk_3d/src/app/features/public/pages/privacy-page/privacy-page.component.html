@@ -1,0 +1,49 @@
+<div class="min-h-[80vh] bg-[#0b0f19] text-white py-16 px-4 relative overflow-hidden animate-fade-in">
+  <!-- Luz de fondo sutil -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-500/5 rounded-full filter blur-[120px] pointer-events-none"></div>
+
+  <div class="relative z-10 max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
+        Política de Privacidad
+      </h1>
+      <p class="text-slate-400 text-sm mt-2">Última actualización: Junio 2026</p>
+      <div class="w-16 h-1 bg-amber-500 rounded-full mt-4 mx-auto"></div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl sm:p-10 leading-relaxed text-slate-300 space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white mb-2">1. Información que Recopilamos</h2>
+        <p class="text-sm text-slate-400 mb-3">
+          Recopilamos la información estrictamente necesaria para brindar nuestros servicios SaaS de simulación estructural y control de obras:
+        </p>
+        <ul class="list-disc pl-5 text-sm text-slate-400 space-y-2">
+          <li><strong>Datos de Registro:</strong> Nombre completo, apellido, dirección de correo electrónico, contraseña (encriptada), teléfono y profesión.</li>
+          <li><strong>Datos Técnicos:</strong> Archivos de planos arquitectónicos (PDF, PNG, JPG, CAD) que cargue en la plataforma y los modelos 3D resultantes.</li>
+          <li><strong>Registros de Transacciones:</strong> Registros del plan de suscripción seleccionado e historial de pagos.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-white mb-2">2. Uso de la Información</h2>
+        <p class="text-sm text-slate-400">
+          Sus datos y planos se utilizan únicamente para procesar los modelos 3D estructurales mediante nuestra red neuronal Mask R-CNN, realizar análisis de daños vía Gemini AI y generar cómputos métricos de materiales. Nos comprometemos a no vender, alquilar ni compartir su información o archivos técnicos con terceros para fines comerciales o publicitarios.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
+        <h2 class="text-xl font-bold text-amber-400 mb-2">3. Seguridad y Auditoría en Blockchain</h2>
+        <p class="text-sm text-slate-300">
+          Para garantizar la inmutabilidad y transparencia de las auditorías de riesgo estructural generadas en la plataforma, registramos los hashes criptográficos (huellas digitales) de los reportes en una cadena de bloques (Blockchain). Esto asegura que sus análisis de seguridad no puedan ser alterados retroactivamente. Adicionalmente, toda la comunicación se cifra mediante protocolos SSL/TLS y las contraseñas se almacenan con algoritmos de hasheo seguros (bcrypt/argon2) en el backend de Django.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-white mb-2">4. Sus Derechos de Acceso y Eliminación</h2>
+        <p class="text-sm text-slate-400">
+          Usted conserva el control total de sus datos. En cualquier momento, puede acceder a su perfil para modificar sus datos personales, descargar sus planos procesados o solicitar la eliminación total de su cuenta y archivos de nuestros servidores llamando al canal de soporte técnico.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
