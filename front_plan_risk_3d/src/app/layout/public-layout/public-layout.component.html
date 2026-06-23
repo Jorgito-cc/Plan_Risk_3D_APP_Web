@@ -12,7 +12,7 @@
           <span class="text-lg font-extrabold text-white tracking-tight leading-none group-hover:text-amber-400 transition-colors">
             Plan Risk <span class="text-amber-500 font-black">3D</span>
           </span>
-          <span class="text-[9px] text-slate-400 font-medium tracking-wider uppercase mt-1">Ingeniería & IA</span>
+          <span class="text-[9px] text-slate-400 font-medium tracking-wider uppercase mt-1">{{ ts.t('nav.subtitle') }}</span>
         </div>
       </a>
 
@@ -22,41 +22,50 @@
           <li>
             <a [routerLink]="['/home']" routerLinkActive="bg-amber-500/10 text-amber-400 border-amber-500/30" [routerLinkActiveOptions]="{exact: true}"
               class="border border-transparent rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/40 transition-all duration-200">
-              Inicio
+              {{ ts.t('nav.home') }}
             </a>
           </li>
           <li>
             <a href="#funcionalidades" (click)="scrollTo($event, 'funcionalidades')"
               class="border border-transparent rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/40 transition-all duration-200">
-              Funcionalidades
+              {{ ts.t('nav.features') }}
             </a>
           </li>
           <li>
             <a href="#prueba" (click)="scrollTo($event, 'prueba')"
               class="border border-transparent rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/40 transition-all duration-200">
-              Visor 3D
+              {{ ts.t('nav.viewer') }}
             </a>
           </li>
           <li>
             <a href="#precios" (click)="scrollTo($event, 'precios')"
               class="border border-transparent rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/40 transition-all duration-200">
-              Suscripciones
+              {{ ts.t('nav.pricing') }}
             </a>
           </li>
           <li>
             <a href="#preguntas" (click)="scrollTo($event, 'preguntas')"
               class="border border-transparent rounded-xl px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/40 transition-all duration-200">
-              FAQ
+              {{ ts.t('nav.faq') }}
             </a>
           </li>
         </ul>
       </nav>
 
-      <!-- Access Button -->
+      <!-- Language toggle + Access Button -->
       <div class="flex items-center gap-3">
+        <!-- Botón cambio de idioma -->
+        <button (click)="ts.toggle()" [title]="ts.t('lang.tooltip')"
+          class="rounded-xl border border-slate-700 bg-slate-800/60 hover:bg-slate-700/80 px-3 py-2 text-xs font-bold text-amber-400 hover:text-amber-300 tracking-wider transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+          </svg>
+          {{ ts.t('lang.switch') }}
+        </button>
+
         <a routerLink="/login"
           class="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-amber-500/10 hover:shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 duration-200">
-          Iniciar Sesión
+          {{ ts.t('nav.login') }}
         </a>
       </div>
     </div>
@@ -87,41 +96,41 @@
           </span>
         </div>
         <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
-          Plataforma avanzada de modelado estructural y predicción de fallas asistida por Inteligencia Artificial y asegurada con tecnología Blockchain.
+          {{ ts.t('footer.description') }}
         </p>
       
       </div>
 
       <!-- Columna 2: Navegación Rápida -->
       <div class="flex flex-col gap-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 border-b border-slate-800/80 pb-2">Enlaces Rápidos</h4>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 border-b border-slate-800/80 pb-2">{{ ts.t('footer.quickLinks') }}</h4>
         <ul class="grid grid-cols-2 gap-2 text-xs">
           <li>
-            <a href="#funcionalidades" (click)="scrollTo($event, 'funcionalidades')" class="hover:text-amber-400 transition-colors">Funcionalidades</a>
+            <a href="#funcionalidades" (click)="scrollTo($event, 'funcionalidades')" class="hover:text-amber-400 transition-colors">{{ ts.t('nav.features') }}</a>
           </li>
           <li>
-            <a href="#prueba" (click)="scrollTo($event, 'prueba')" class="hover:text-amber-400 transition-colors">Visor 3D</a>
+            <a href="#prueba" (click)="scrollTo($event, 'prueba')" class="hover:text-amber-400 transition-colors">{{ ts.t('nav.viewer') }}</a>
           </li>
           <li>
-            <a href="#precios" (click)="scrollTo($event, 'precios')" class="hover:text-amber-400 transition-colors">Suscripciones</a>
+            <a href="#precios" (click)="scrollTo($event, 'precios')" class="hover:text-amber-400 transition-colors">{{ ts.t('nav.pricing') }}</a>
           </li>
           <li>
-            <a href="#preguntas" (click)="scrollTo($event, 'preguntas')" class="hover:text-amber-400 transition-colors">FAQ</a>
+            <a href="#preguntas" (click)="scrollTo($event, 'preguntas')" class="hover:text-amber-400 transition-colors">{{ ts.t('nav.faq') }}</a>
           </li>
           <li>
-            <a routerLink="/terms" class="hover:text-amber-400 transition-colors">Términos</a>
+            <a routerLink="/terms" class="hover:text-amber-400 transition-colors">{{ ts.t('footer.terms') }}</a>
           </li>
           <li>
-            <a routerLink="/privacy" class="hover:text-amber-400 transition-colors">Privacidad</a>
+            <a routerLink="/privacy" class="hover:text-amber-400 transition-colors">{{ ts.t('footer.privacy') }}</a>
           </li>
         </ul>
       </div>
 
       <!-- Columna 3: Información y Tecnología -->
       <div class="flex flex-col gap-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 border-b border-slate-800/80 pb-2">Ecosistema Técnico</h4>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 border-b border-slate-800/80 pb-2">{{ ts.t('footer.techEcosystem') }}</h4>
         <p class="text-[11px] text-slate-500 leading-relaxed">
-          Diseñado con estándares premium para la industria de la ingeniería civil y estructural.
+          {{ ts.t('footer.techDescription') }}
         </p>
         <div class="flex flex-wrap gap-2 mt-1">
           <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">Django REST</span>

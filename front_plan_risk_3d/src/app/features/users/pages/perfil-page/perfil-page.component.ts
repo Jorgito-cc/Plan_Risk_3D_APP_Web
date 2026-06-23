@@ -30,12 +30,15 @@ export class PerfilPageComponent implements OnInit {
   isReadOnly: boolean = true;
 
   informationForm = this.formBuilder.group({
-    nombre: ['', [Validators.minLength(5)]],
+    nombre: ['', [Validators.minLength(3)]],
+    apellido: [''],
     email: ['', [Validators.email]],
     telefono: ['', [Validators.minLength(8)]],
     plan: [''],                // <-- valor “vacío” al inicio
     fechaExpiracion: [''],
-    fechaRegistro: ['']
+    fechaRegistro: [''],
+    profesion: [''],
+    fechaNacimiento: ['']
   });
 
   public isLoadingImage() {
@@ -62,13 +65,16 @@ export class PerfilPageComponent implements OnInit {
     if (!this.isBrowser) return;
     const id = this.tokenStorageService.getUser()?.id ?? 0;
 
-    // construimos objeto solo con campos no vacíos
     const user: any = {};
     if (this.informationForm.value.nombre) user.nombre = this.informationForm.value.nombre;
+    if (this.informationForm.value.apellido) user.apellido = this.informationForm.value.apellido;
     if (this.informationForm.value.email) user.email = this.informationForm.value.email;
+    if (this.informationForm.value.telefono) user.telefono = this.informationForm.value.telefono;
     if (this.informationForm.value.plan) user.rol = this.informationForm.value.plan;
     if (this.informationForm.value.fechaExpiracion) user.fecha_expiracion_plan = this.informationForm.value.fechaExpiracion;
     if (this.informationForm.value.fechaRegistro) user.fecha_registro = this.informationForm.value.fechaRegistro;
+    if (this.informationForm.value.profesion) user.profesion = this.informationForm.value.profesion;
+    if (this.informationForm.value.fechaNacimiento) user.fecha_nacimiento = this.informationForm.value.fechaNacimiento;
 
     this.userService.editUser(id, user).subscribe({
       next: (response: any) => {
@@ -120,14 +126,16 @@ export class PerfilPageComponent implements OnInit {
       // parcheamos el formulario con los datos reales:
       this.informationForm.patchValue({
         nombre: usuario.nombre,
+        apellido: usuario.apellido ?? '',
         email: usuario.email,
         telefono: usuario.telefono,
         // aquí aplicamos el mapeo correctamente:
         plan: usuario.rol,
         fechaExpiracion: usuario.fecha_expiracion_plan?.split('T')[0] ?? '',
-        fechaRegistro: usuario.fecha_registro?.split('T')[0] ?? ''
-      })
-        ;
+        fechaRegistro: usuario.fecha_registro?.split('T')[0] ?? '',
+        profesion: usuario.profesion ?? '',
+        fechaNacimiento: usuario.fecha_nacimiento?.split('T')[0] ?? ''
+      });
     });
   }
 

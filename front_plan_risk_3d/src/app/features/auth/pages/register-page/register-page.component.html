@@ -19,64 +19,64 @@
           <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-amber-500/20 mb-3 animate-pulse">
             P
           </div>
-          <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">Crea tu cuenta en</h2>
+          <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">{{ ts.t('register.title') }}</h2>
           <h1 class="text-2xl font-black text-white tracking-tight mt-1">Plan Risk 3D</h1>
         </div>
 
         <!-- Campo: Nombre -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="name">Nombre</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="name">{{ ts.t('register.name') }}</label>
           <input formControlName="nombre" type="text" id="name"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="Juan" />
+            [placeholder]="ts.t('register.namePlaceholder')" />
         </div>
 
         <!-- Campo: Apellido -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="apellido">Apellido</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="apellido">{{ ts.t('register.surname') }}</label>
           <input formControlName="apellido" type="text" id="apellido"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="Pérez" />
+            [placeholder]="ts.t('register.surnamePlaceholder')" />
         </div>
 
         <!-- Campo: Correo -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="email">Correo electrónico</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="email">{{ ts.t('register.email') }}</label>
           <input formControlName="email" type="email" id="email"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="tu@correo.com" />
+            [placeholder]="ts.t('register.emailPlaceholder')" />
         </div>
 
         <!-- Campo: Contraseña -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="password">Contraseña</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="password">{{ ts.t('register.password') }}</label>
           <input formControlName="password" type="password" id="password"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="••••••••" />
+            [placeholder]="ts.t('register.passwordPlaceholder')" />
         </div>
 
         <!-- Campo: Teléfono -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="telefono">Teléfono / Celular</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="telefono">{{ ts.t('register.phone') }}</label>
           <input formControlName="telefono" type="text" id="telefono"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="76543210" />
+            [placeholder]="ts.t('register.phonePlaceholder')" />
         </div>
 
         <!-- Campo: Profesión -->
         <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="profesion">Profesión</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="profesion">{{ ts.t('register.profession') }}</label>
           <select formControlName="profesion" id="profesion"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 cursor-pointer">
-            <option value="estudiante" class="bg-slate-900 text-white">Estudiante</option>
-            <option value="profesional" class="bg-slate-900 text-white">Profesional</option>
-            <option value="otro" class="bg-slate-900 text-white">Otro</option>
+            <option value="estudiante" class="bg-slate-900 text-white">{{ ts.t('register.profStudent') }}</option>
+            <option value="profesional" class="bg-slate-900 text-white">{{ ts.t('register.profProfessional') }}</option>
+            <option value="otro" class="bg-slate-900 text-white">{{ ts.t('register.profOther') }}</option>
           </select>
         </div>
 
         <!-- Campo: Fecha de Nacimiento -->
         <div class="mb-6">
-          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="fecha_nacimiento">Fecha de Nacimiento</label>
+          <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300" for="fecha_nacimiento">{{ ts.t('register.birthDate') }}</label>
           <input formControlName="fecha_nacimiento" type="date" id="fecha_nacimiento"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-white outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
             style="color-scheme: dark;" />
@@ -91,11 +91,11 @@
             class="mt-1 h-4 w-4 rounded border-slate-800 bg-slate-950/40 text-amber-500 focus:ring-amber-500/20 cursor-pointer" 
           />
           <label for="acceptPolicies" class="text-xs text-slate-400 leading-normal select-none">
-            Acepto los 
-            <a routerLink="/terms" target="_blank" class="text-amber-400 hover:underline font-semibold">Términos y Condiciones</a> 
-            y la 
-            <a routerLink="/privacy" target="_blank" class="text-amber-400 hover:underline font-semibold">Política de Privacidad</a> 
-            de Plan Risk 3D.
+            {{ ts.t('register.acceptPolicies') }} 
+            <a routerLink="/terms" target="_blank" class="text-amber-400 hover:underline font-semibold">{{ ts.t('register.termsLink') }}</a> 
+            {{ ts.t('register.andThe') }} 
+            <a routerLink="/privacy" target="_blank" class="text-amber-400 hover:underline font-semibold">{{ ts.t('register.privacyLink') }}</a> 
+            {{ ts.t('register.ofPR3D') }}
           </label>
         </div>
 
@@ -103,15 +103,15 @@
         <button type="submit"
           [disabled]="registerForm.invalid"
           class="mb-6 w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-500/10 hover:shadow-amber-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all transform hover:-translate-y-0.5 duration-200">
-          REGISTRARSE
+          {{ ts.t('register.submit') }}
         </button>
 
         <!-- Links inferiores -->
         <div class="mt-2 flex items-center justify-between text-xs border-t border-slate-800/80 pt-6">
           <a routerLink="/login"
-            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">¿Ya tienes cuenta? Ingresa</a>
+            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">{{ ts.t('register.hasAccount') }}</a>
           <a routerLink="/home"
-            class="text-slate-400 hover:text-white transition duration-150">Volver a Inicio</a>
+            class="text-slate-400 hover:text-white transition duration-150">{{ ts.t('register.backHome') }}</a>
         </div>
       </form>
     </div>

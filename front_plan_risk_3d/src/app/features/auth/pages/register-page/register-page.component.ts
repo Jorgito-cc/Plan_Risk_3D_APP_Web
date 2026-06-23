@@ -6,6 +6,7 @@ import { response } from 'express';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '../../../i18n/translate.service';
 
 
 @Component({
@@ -19,6 +20,7 @@ export class RegisterPageComponent {
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
   private toastr = inject(ToastrService);
+  ts = inject(TranslateService);
 
 
   private rol: string = 'usuario_normal';

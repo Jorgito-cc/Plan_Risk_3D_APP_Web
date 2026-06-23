@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, PLATFORM_ID } fro
 import { TokenStorageService } from '../../features/auth/services/tokenStorage.service';
 import { isPlatformBrowser } from '@angular/common';
 import { UserService } from '../../features/users/services/user.service';
+import { TranslateService } from '../../features/i18n/translate.service';
 
 
 
@@ -18,6 +19,7 @@ export class PrivateLayoutComponent {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private userService = inject(UserService);
+  ts = inject(TranslateService);
 
 
   menuOpen = false;

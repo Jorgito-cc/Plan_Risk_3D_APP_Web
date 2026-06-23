@@ -46,12 +46,14 @@ CORS_ALLOW_HEADERS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'corsheaders',
     'view_url_3D',
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
     'users',
     'presupuesto',
     'suggestion_risk',
+    'collaboration',
 ]
 
 MIDDLEWARE = [
@@ -90,20 +93,36 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api_plan_risk_3d.wsgi.application'
+ASGI_APPLICATION = 'api_plan_risk_3d.asgi.application'
+
+# Django Channels - Layer de comunicación entre consumers
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
+
+
+
+
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'poryecto_sw2',      # nombre de tu base de datos
-        'USER': 'postgres',          # tu usuario de PostgreSQL
-        'PASSWORD': '123456789',   # la contraseña de ese usuario
-        #'HOST': 'postgres',         # o la IP del servidor si es remoto
-        'HOST': 'localhost',
-        'PORT': '5432',              # puerto por defecto de PostgreSQL
+        'NAME': os.getenv('POSTGRES_DB', 'poryecto_sw2'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', '123456789'),
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -171,7 +190,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:4200',
     'http://127.0.0.1:4200',
     'http://localhost:5173',
-    'http://127.0.0.1:5173'
+    'https://corporativosw.netlify.app/'
 ]
 CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
@@ -179,3 +198,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Gemini API Configuration
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+# Configuración para envío de correos (SMTP Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = f'PlanRisk3D <{EMAIL_HOST_USER}>'

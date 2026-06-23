@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { timeout } from 'rxjs';
+import { TranslateService } from '../../../i18n/translate.service';
 
 
 @Component({
@@ -19,6 +20,7 @@ export class LoginPageComponent {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  ts = inject(TranslateService);
 
 
   loginForm: FormGroup = this.formBuilder.group({

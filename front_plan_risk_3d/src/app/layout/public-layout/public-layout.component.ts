@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, PLATFORM_ID } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { TranslateService } from '../../features/i18n/translate.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -11,6 +12,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class PublicLayoutComponent {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  ts = inject(TranslateService);
 
   scrollTo(event: MouseEvent, id: string) {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -33,4 +35,3 @@ export class PublicLayoutComponent {
     }
   }
 }
-

@@ -164,7 +164,7 @@ def create_plan3d_job(request):
                         'limit_reached': True,
                         'current_count': current,
                         'limit': limit,
-                        'upgrade_url': 'http://localhost:5173/planes',
+                        'upgrade_url': 'https://corporativosw.netlify.app/planes',
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
@@ -265,7 +265,7 @@ def create_plan_json(request):
                         'limit_reached': True,
                         'current_count': current,
                         'limit': limit,
-                        'upgrade_url': 'http://localhost:5173/planes',
+                        'upgrade_url': 'https://corporativosw.netlify.app/planes',
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )

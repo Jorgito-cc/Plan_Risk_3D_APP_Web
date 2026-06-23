@@ -98,9 +98,11 @@ export class Modelo3D {
       loader.load(this.url, (gltf) => {
         this.objeto = gltf.scene;
 
-        this.objeto.traverse((child) => {
+          let meshIndex = 0;
+          this.objeto.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
+            meshIndex++;
 
             mesh.material = new THREE.MeshStandardMaterial({
               color: 0x888888,
@@ -109,7 +111,8 @@ export class Modelo3D {
               side: THREE.DoubleSide,
             });
 
-            mesh.name = child.name || `mesh_${THREE.MathUtils.generateUUID()}`;
+            // Usar un índice determinístico en lugar de un UUID aleatorio para que los clientes tengan los mismos IDs
+            mesh.name = child.name || `mesh_auto_${meshIndex}`;
 
             // 🧱 Clasificar por tipo (nombre parcial o palabra clave)
             const lname = mesh.name.toLowerCase();

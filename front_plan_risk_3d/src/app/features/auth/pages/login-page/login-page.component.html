@@ -19,24 +19,24 @@
           <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-amber-500/20 mb-3 animate-pulse">
             P
           </div>
-          <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">Bienvenido a</h2>
+          <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">{{ ts.t('login.welcome') }}</h2>
           <h1 class="text-2xl font-black text-white tracking-tight mt-1">Plan Risk 3D</h1>
         </div>
 
         <!-- Campo: Correo -->
         <div class="mb-5">
-          <label for="email" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Correo electrónico</label>
+          <label for="email" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{ ts.t('login.email') }}</label>
           <input formControlName="email" type="email" id="email"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
-            placeholder="tu@correo.com" />
+            [placeholder]="ts.t('login.emailPlaceholder')" />
           @if (isValidField('email')) {
-            <span class="text-red-400 text-xs mt-1 block font-medium">Por favor ingrese un correo electrónico válido</span>
+            <span class="text-red-400 text-xs mt-1 block font-medium">{{ ts.t('login.emailError') }}</span>
           }
         </div>
 
         <!-- Campo: Contraseña -->
         <div class="mb-8">
-          <label for="password" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Contraseña</label>
+          <label for="password" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{ ts.t('login.password') }}</label>
           <input formControlName="password" type="password" id="password"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
             placeholder="••••••••" />
@@ -45,15 +45,15 @@
         <!-- Botón ingresar -->
         <button type="submit"
           class="mb-6 w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-500/10 hover:shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 duration-200">
-          INICIAR SESIÓN
+          {{ ts.t('login.submit') }}
         </button>
 
         <!-- Links inferiores -->
         <div class="mt-2 flex items-center justify-between text-xs border-t border-slate-800/80 pt-6">
           <a routerLink="/recover"
-            class="text-slate-400 hover:text-white transition duration-150">¿Olvidaste tu contraseña?</a>
+            class="text-slate-400 hover:text-white transition duration-150">{{ ts.t('login.forgot') }}</a>
           <a routerLink="/register"
-            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">Registrarse</a>
+            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">{{ ts.t('login.register') }}</a>
         </div>
       </form>
     </div>

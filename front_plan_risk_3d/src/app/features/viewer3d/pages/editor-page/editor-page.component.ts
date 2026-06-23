@@ -8,6 +8,8 @@ import {
   PLATFORM_ID,
   signal,
   ChangeDetectorRef,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
@@ -23,22 +25,29 @@ import { StructuralAnalysisService } from '../../services/structural-analysis.se
 import { StructuralAnalysis } from '../../../../models/interfaces/model3D/structural_analysis.interface';
 import { Spinner } from "../../../../layout/components/spinner/spinner";
 import { environment } from '../../../../../environments/environment';
+import { CollaborationService, PieceUpdate } from '../../services/collaboration.service';
+import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 
 @Component({
   selector: 'app-editor-page',
-  imports: [DecimalPipe, BudgetForm, PricesForm, Spinner],
+  imports: [DecimalPipe, BudgetForm, PricesForm, Spinner, FormsModule],
   templateUrl: './editor-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorPageComponent {
+export class EditorPageComponent implements OnDestroy {
 
   // --- Inyección y referencias al DOM ---
   private platformId = inject(PLATFORM_ID);
   private budgetService = inject(BudgetService);
   private modelService = inject(ModelsService);
   private analysisService = inject(StructuralAnalysisService);
+  public collaborationService = inject(CollaborationService);
+  private route = inject(ActivatedRoute);
   private API = environment.endpoint;
+  private wsSub: Subscription | null = null;
   // ChangeDetectorRef para forzar actualización con ChangeDetectionStrategy.OnPush
   private cdr = inject(ChangeDetectorRef);
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -55,6 +64,17 @@ export class EditorPageComponent {
   public budgetForm = signal<boolean>(false);
   public chatBoxModal = signal<boolean>(false);//usar en el @if
 
+  // --- Compartir / Colaboración ---
+  shareModalOpen = signal(false);
+  inviteEmail = '';
+  inviteStatus = signal('');
+
+  // --- Enviar Modelo por Correo ---
+  sendModelModalOpen = signal(false);
+  sendModelEmail = '';
+  sendModelStatus = signal('');
+  isSendingModel = signal(false);
+  public collaboratorLabels = signal<{ piezaId: string; user: string; color: string; pos: { x: number; y: number; z: number } }[]>([]);
 
   year = new Date().getFullYear();
   structuralAnalysis: StructuralAnalysis | null = null;
@@ -213,58 +233,6 @@ export class EditorPageComponent {
     //aqui voy a tener que cargar los materiales guardados en el local storage
     // Ejecutar solo en cliente
     if (!isPlatformBrowser(this.platformId)) return;
-    // ✅ Leer modelo desde localStorage
-
-
-    const modeljson = localStorage.getItem('modelo');
-    let model: any = null;
-
-    if (modeljson) {
-      try {
-        model = JSON.parse(modeljson);
-        console.log("✅ Modelo parseado:", model);
-      } catch (err) {
-        console.error("⚠️ Error al parsear JSON del modelo:", err);
-        localStorage.removeItem('modelo'); // limpia si está corrupto
-      }
-    } else {
-      console.warn("⚠️ No hay modelo guardado en localStorage");
-      // 🔹 Opción: asignar un modelo por defecto si querés
-      // model = { glb_model: '/media/models/mimodelo.glb' };
-    }
-
-
-    // 5) Cargar modelo 3D
-    // 🕒 Retraso breve para asegurar que el canvas y la escena estén listos
-    setTimeout(() => {
-      let url: string = '';
-      if (!model || !model.glb_model) {
-        console.warn('⚠️ No se encontró modelo en localStorage.');
-        url = 'https://res.cloudinary.com/diqqfka6g/image/upload/v1763521878/vacio_wama55.glb';
-      } else {
-        url = `${this.API}${model.glb_model.slice(1)}`; // Quitar la barra inicial
-      }
-      console.log('🧱 Cargando modelo desde:', url);
-
-      this.modelo3D = new Modelo3D(
-        this.scene,
-        url,
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(1, 1, 1),
-        new THREE.Euler(0, 0, 0),
-        this.textures,
-        () => {
-          console.log('✅ Modelo cargado correctamente');
-          const obj = this.modelo3D.getObject3D();
-          this.posX.set(obj.position.x);
-          this.posY.set(obj.position.y);
-          this.posZ.set(obj.position.z);
-        }
-      );
-    }, 300);
-
-
-
     // 1) Preparar renderer y tamaño inicial
     const canvas = this.canvasRef.nativeElement;
     const { clientWidth: w, clientHeight: h } = canvas;
@@ -333,6 +301,20 @@ export class EditorPageComponent {
     // 🔸 Bloquear OrbitControls mientras se arrastra un objeto
     this.transformControls.addEventListener('dragging-changed', (event) => {
       this.controls.enabled = !event.value;
+
+      // 🔄 Cuando se SUELTA la pieza (drag end), enviar posición al WebSocket
+      if (!event.value && this.selectedMesh) {
+        const mesh = this.selectedMesh;
+        if (this.collaborationService.isConnected()) {
+          this.collaborationService.sendPieceUpdate(
+            mesh.name || mesh.uuid,
+            { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z },
+            'soltar'
+          );
+          // Quien mueve la pieza es el responsable de autoguardar para los que entren luego
+          this.triggerAutoSave();
+        }
+      }
     });
 
 
@@ -378,6 +360,84 @@ export class EditorPageComponent {
     });
     canvas.addEventListener('click', this.onCanvasClick.bind(this));
 
+    // 🔌 Colaboración: verificar si hay parámetro ?room= y conectarse
+    this.route.queryParams.subscribe(params => {
+      const roomToken = params['room'];
+      if (roomToken) {
+        const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+        const userName = userData.nombre || 'Invitado';
+        // Generar un color único basado en el nombre
+        const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
+        const userColor = colors[userName.length % colors.length];
+        this.collaborationService.connect(roomToken, userName, userColor);
+
+        // Escuchar movimientos de otros usuarios
+        this.wsSub = this.collaborationService.messages$.subscribe((msg: PieceUpdate) => {
+          if ((msg.accion === 'mover' || msg.accion === 'soltar') && msg.pieza_id && msg.posicion && this.modelo3D) {
+            this.applyRemotePieceMove(msg);
+          }
+        });
+        // Obtener el modelo del backend de esta sala
+        this.collaborationService.obtenerSala(roomToken).subscribe({
+           next: (sala) => {
+              const url = sala.glb_model ? `${this.API}${sala.glb_model.slice(1)}` : 'https://res.cloudinary.com/diqqfka6g/image/upload/v1763521878/vacio_wama55.glb';
+              // Guardar un mock en localStorage para que el resto del sistema no explote
+              localStorage.setItem('modelo', JSON.stringify({ id: sala.proyecto_id, glb_model: sala.glb_model }));
+              this.load3DModel(url);
+           },
+           error: (err) => {
+              console.error('No se pudo obtener la sala:', err);
+              this.initLocalModel();
+           }
+        });
+      } else {
+        // Carga normal desde LocalStorage
+        this.initLocalModel();
+      }
+    });
+  }
+
+  private initLocalModel(): void {
+    const modeljson = localStorage.getItem('modelo');
+    let model: any = null;
+    let url: string = '';
+
+    if (modeljson) {
+      try {
+        model = JSON.parse(modeljson);
+      } catch (err) {
+        localStorage.removeItem('modelo');
+      }
+    }
+
+    if (!model || !model.glb_model) {
+      url = 'https://res.cloudinary.com/diqqfka6g/image/upload/v1763521878/vacio_wama55.glb';
+    } else {
+      url = `${this.API}${model.glb_model.slice(1)}`;
+    }
+    
+    this.load3DModel(url);
+  }
+
+  private load3DModel(url: string): void {
+    setTimeout(() => {
+      console.log('🧱 Cargando modelo desde:', url);
+      this.modelo3D = new Modelo3D(
+        this.scene,
+        url,
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(1, 1, 1),
+        new THREE.Euler(0, 0, 0),
+        this.textures,
+        () => {
+          console.log('✅ Modelo cargado correctamente');
+          const obj = this.modelo3D.getObject3D();
+          this.posX.set(obj.position.x);
+          this.posY.set(obj.position.y);
+          this.posZ.set(obj.position.z);
+        }
+      );
+    }, 300);
   }
 
   scrollTo(event: MouseEvent, id: string) {
@@ -699,6 +759,37 @@ export class EditorPageComponent {
 
   }
 
+  // --- Autoguardado colaborativo ---
+  private autoSaveTimeout: any = null;
+
+  private triggerAutoSave(): void {
+    if (this.autoSaveTimeout) {
+      clearTimeout(this.autoSaveTimeout);
+    }
+    // Esperar 2 segundos de inactividad antes de subir el GLB para no saturar el servidor
+    this.autoSaveTimeout = setTimeout(async () => {
+      console.log('🔄 Autoguardando modelo colaborativo...');
+      if (this.modelo3D) {
+        const model = JSON.parse(localStorage.getItem('modelo') || '{}');
+        if (!model.id) return;
+        const model3D = await this.modelo3D.exportAsGLB(`job_${model.id}.glb`);
+        
+        this.modelService.updateModel(new File([model3D.blob], model3D.filename), model.usuario).subscribe({
+          next: (models) => {
+            console.log('✅ Autoguardado colaborativo exitoso');
+            const updated = models.find((m: any) => m.id === model.id);
+            if (updated) {
+              localStorage.setItem('modelo', JSON.stringify(updated));
+            }
+          },
+          error: (error) => {
+            console.error('❌ Error en autoguardado colaborativo:', error);
+          }
+        });
+      }
+    }, 2000);
+  }
+
   onGenerateBudget() {
     //implementar el toast y un spinner mientras se genera el presupuesto
     if (!this.modelo3D) return;
@@ -832,6 +923,197 @@ export class EditorPageComponent {
     this.hasSelection.set(false);
 
     console.log("🗑 Elemento eliminado correctamente");
+  }
+
+  // ─── Métodos de Colaboración ───
+
+  /**
+   * Iniciar modo colaborativo: crear sala y mostrar modal para compartir.
+   */
+  startCollaboration(): void {
+    const model = JSON.parse(localStorage.getItem('modelo') || '{}');
+    if (!model.id) {
+      console.warn('⚠️ No hay modelo cargado para colaborar');
+      return;
+    }
+
+    this.collaborationService.crearSala(model.id).subscribe({
+      next: (sala) => {
+        console.log('✅ Sala creada:', sala.token);
+        // Conectar al WebSocket
+        const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+        const userName = userData.nombre || 'Dueño';
+        const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
+        const userColor = colors[userName.length % colors.length];
+        this.collaborationService.connect(sala.token, userName, userColor);
+
+        // Escuchar mensajes
+        this.wsSub = this.collaborationService.messages$.subscribe((msg: PieceUpdate) => {
+          if ((msg.accion === 'mover' || msg.accion === 'soltar') && msg.pieza_id && msg.posicion && this.modelo3D) {
+            this.applyRemotePieceMove(msg);
+          }
+        });
+
+        // Mostrar modal de compartir
+        this.shareModalOpen.set(true);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('❌ Error al crear sala:', err);
+      }
+    });
+  }
+
+  /**
+   * Obtener el enlace de la sala para compartir.
+   */
+  getCollaborationLink(): string {
+    const token = this.collaborationService.activeRoomToken();
+    if (!token) return '';
+    return `${window.location.origin}/private/editor?room=${token}`;
+  }
+
+  /**
+   * Copiar el enlace al portapapeles.
+   */
+  copyLink(): void {
+    const link = this.getCollaborationLink();
+    navigator.clipboard.writeText(link).then(() => {
+      this.inviteStatus.set('✅ Enlace copiado al portapapeles');
+      setTimeout(() => this.inviteStatus.set(''), 3000);
+    });
+  }
+
+  /**
+   * Enviar invitación por correo electrónico.
+   */
+  sendEmailInvite(): void {
+    if (!this.inviteEmail) return;
+    const link = this.getCollaborationLink();
+    const model = JSON.parse(localStorage.getItem('modelo') || '{}');
+
+    this.collaborationService.enviarInvitacion(
+      this.inviteEmail,
+      link,
+      `Proyecto #${model.id || 'sin nombre'}`
+    ).subscribe({
+      next: () => {
+        this.inviteStatus.set(`✅ Invitación enviada a ${this.inviteEmail}`);
+        this.inviteEmail = '';
+        setTimeout(() => this.inviteStatus.set(''), 4000);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.inviteStatus.set('❌ Error al enviar la invitación');
+        console.error(err);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /**
+   * Aplicar el movimiento de una pieza recibido por WebSocket.
+   */
+  private applyRemotePieceMove(msg: PieceUpdate): void {
+    if (!this.modelo3D || !msg.pieza_id || !msg.posicion) return;
+
+    const allObjects = [
+      ...this.modelo3D.getWalls(),
+      ...this.modelo3D.getDoors(),
+      ...this.modelo3D.getWindows(),
+    ];
+
+    const target = allObjects.find(m => m.name === msg.pieza_id || m.uuid === msg.pieza_id);
+    if (target) {
+      target.position.set(msg.posicion!.x, msg.posicion!.y, msg.posicion!.z);
+
+      // Actualizar etiqueta de colaborador
+      const labels = this.collaboratorLabels().filter(l => l.piezaId !== msg.pieza_id);
+      labels.push({
+        piezaId: msg.pieza_id!,
+        user: msg.user || 'Colaborador',
+        color: msg.color || '#3B82F6',
+        pos: msg.posicion!
+      });
+      this.collaboratorLabels.set(labels);
+
+      // Remover la etiqueta después de 3 segundos
+      if (msg.accion === 'soltar') {
+        setTimeout(() => {
+          this.collaboratorLabels.set(
+            this.collaboratorLabels().filter(l => l.piezaId !== msg.pieza_id)
+          );
+          this.cdr.markForCheck();
+        }, 3000);
+      }
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Cerrar modal de compartir.
+   */
+  toggleShareModal(): void {
+    if (!this.shareModalOpen() && !this.collaborationService.activeRoomToken()) {
+      this.startCollaboration();
+      return;
+    }
+    this.shareModalOpen.set(!this.shareModalOpen());
+  }
+
+  // --- Métodos de Envío de Modelo ---
+  toggleSendModelModal(dropdown?: HTMLDetailsElement): void {
+    if (dropdown) dropdown.removeAttribute('open');
+    this.sendModelModalOpen.set(!this.sendModelModalOpen());
+    this.sendModelStatus.set('');
+  }
+
+  async sendModelByEmail(): Promise<void> {
+    if (!this.sendModelEmail || !this.modelo3D) return;
+    
+    this.isSendingModel.set(true);
+    this.sendModelStatus.set('⏳ Generando y enviando...');
+    this.cdr.markForCheck();
+
+    try {
+      const modelInfo = JSON.parse(localStorage.getItem('modelo') || '{}');
+      const model3D = await this.modelo3D.exportAsGLB(`proyecto_${modelInfo.id || 'exportado'}.glb`);
+      const file = new File([model3D.blob], model3D.filename);
+
+      this.collaborationService.enviarModeloGLB(
+        this.sendModelEmail,
+        file,
+        `Proyecto #${modelInfo.id || 'Exportado'}`
+      ).subscribe({
+        next: () => {
+          this.sendModelStatus.set(`✅ Enviado a ${this.sendModelEmail}`);
+          this.sendModelEmail = '';
+          this.isSendingModel.set(false);
+          this.cdr.markForCheck();
+          setTimeout(() => this.sendModelModalOpen.set(false), 2500);
+        },
+        error: (err) => {
+          this.sendModelStatus.set('❌ Error al enviar. Revisa el correo.');
+          this.isSendingModel.set(false);
+          console.error(err);
+          this.cdr.markForCheck();
+        }
+      });
+    } catch (e) {
+      this.sendModelStatus.set('❌ Error al generar el modelo 3D.');
+      this.isSendingModel.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Limpieza al destruir el componente.
+   */
+  ngOnDestroy(): void {
+    if (this.wsSub) {
+      this.wsSub.unsubscribe();
+    }
+    this.collaborationService.disconnect();
   }
 
 }

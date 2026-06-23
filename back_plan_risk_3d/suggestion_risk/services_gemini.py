@@ -423,6 +423,69 @@ def call_gemini(prompt):
         }
 
 
+def call_groq(prompt):
+    """
+    Llamar a la API de Groq con un prompt de texto usando Llama 3.
+    """
+    GROQ_API_KEY = getattr(settings, "GROQ_API_KEY", os.getenv("GROQ_API_KEY"))
+    
+    if not GROQ_API_KEY:
+        return {
+            'success': False,
+            'error': 'No se ha configurado la API key de Groq. Por favor configure GROQ_API_KEY en .env'
+        }
+    
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.5
+    }
+    
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            timeout=60
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+            if 'choices' in result and len(result['choices']) > 0:
+                texto = result['choices'][0]['message']['content']
+                return {
+                    'success': True,
+                    'data': texto
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'No se pudo obtener respuesta del modelo Groq'
+                }
+        else:
+            error_msg = (
+                f'Error de la API de Groq: {response.status_code} - '
+                f'{response.text}'
+            )
+            return {
+                'success': False,
+                'error': error_msg
+            }
+
+    except Exception as e:
+        return {
+            'success': False,
+            'error': f'Error al llamar a Groq: {str(e)}'
+        }
+
+
+
 def analizar_modelo_glb(archivo_glb):
     """
     Analizar archivo .glb usando Gemini API REST.

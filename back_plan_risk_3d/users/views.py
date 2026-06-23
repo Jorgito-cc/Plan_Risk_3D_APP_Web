@@ -49,9 +49,152 @@ class RegistroView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         """Crear nuevo usuario."""
+        from django.core.mail import EmailMultiAlternatives
+        from django.utils.html import strip_tags
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             usuario = serializer.save()
+
+            # Enviar correo de bienvenida si es de gmail o uagrm.edu.bo
+            dominios_permitidos = ('@gmail.com', '@uagrm.edu.bo')
+            if usuario.email.lower().endswith(dominios_permitidos):
+                subject = '¡Bienvenido a PlanRisk3D! 🚀'
+                
+                # HTML content con datos de la empresa, planes y funciones
+                html_content = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+                    <div style="background-color: #003366; padding: 20px; text-align: center; color: white;">
+                        <h1>PlanRisk3D</h1>
+                        <p>Plataforma de Generación de Modelos 3D y Gestión de Riesgos</p>
+                    </div>
+                    <div style="padding: 20px; color: #333;">
+                        <h2>¡Hola {usuario.nombre}! Bienvenido a la familia</h2>
+                        <p>Nos alegra mucho tenerte con nosotros. <strong>PlanRisk3D</strong> es una herramienta innovadora impulsada por Inteligencia Artificial que transforma planos 2D en modelos 3D interactivos, permitiendo una mejor visualización arquitectónica y evaluación de riesgos.</p>
+                        
+                        <h3 style="color: #003366; border-bottom: 2px solid #003366; padding-bottom: 5px;">¿Qué puedes hacer en PlanRisk3D?</h3>
+                        <ul>
+                            <li>🏗️ <strong>Conversión Automática:</strong> Sube planos en 2D y obtén vistas en 3D en minutos.</li>
+                            <li>🤖 <strong>Asistencia de IA:</strong> Analiza tus modelos con nuestro asistente virtual inteligente.</li>
+                            <li>🔒 <strong>Seguridad Blockchain:</strong> Registra tus planos en la red de Ethereum (Sepolia) para inmutabilidad.</li>
+                            <li>📱 <strong>Realidad Aumentada (AR):</strong> Visualiza tus modelos en el mundo real desde tu dispositivo móvil.</li>
+                        </ul>
+
+                        <h3 style="color: #003366; border-bottom: 2px solid #003366; padding-bottom: 5px;">Nuestros Planes</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <tr style="background-color: #f4f4f4;">
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Gratuito</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Acceso a herramientas básicas de visualización.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Estrella</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Modelos 3D avanzados + Registro en Blockchain + Texturas.</td>
+                            </tr>
+                            <tr style="background-color: #f4f4f4;">
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Premium</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">Acceso total ilimitado + Asistente IA Avanzado + AR Móvil.</td>
+                            </tr>
+                        </table>
+
+                        <p style="margin-top: 30px; text-align: center;">
+                            <a href="https://planrisk3d.com" style="background-color: #003366; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Explorar PlanRisk3D</a>
+                        </p>
+                    </div>
+                    <div style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #777;">
+                        © 2026 PlanRisk3D - Innovación en la Construcción.<br>
+                        Si tienes preguntas, contáctanos a support@planrisk3d.com
+                    </div>
+                </div>
+                """
+                text_content = strip_tags(html_content)
+
+                try:
+                    # 1. ENVIAR CORREO DE BIENVENIDA
+                    msg = EmailMultiAlternatives(
+                        subject, 
+                        text_content, 
+                        settings.DEFAULT_FROM_EMAIL, 
+                        [usuario.email]
+                    )
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send(fail_silently=False)
+                    print(f"✅ Correo de bienvenida enviado a {usuario.email}")
+
+                    # 2. ENVIAR CORREO DE TÉRMINOS Y CONDICIONES
+                    subject_tc = 'Términos y Condiciones - PlanRisk3D 📜'
+                    html_tc = f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #111; border-radius: 10px; overflow: hidden; background-color: #0B132B; color: #E0E0E0;">
+                        <div style="text-align: center; padding: 20px;">
+                            <h1 style="color: #FFD700; margin-bottom: 5px;">Términos y Condiciones</h1>
+                            <p style="color: #A0A0A0; font-size: 12px; margin-top: 0;">Última actualización: Junio 2026</p>
+                            <hr style="border: 1px solid #FFD700; width: 50px; margin: 10px auto;">
+                        </div>
+                        <div style="padding: 20px; font-size: 14px; line-height: 1.6;">
+                            <h3 style="color: #FFFFFF;">1. Aceptación de los Términos</h3>
+                            <p>Al registrarse y utilizar los servicios de la plataforma <strong>Plan Risk 3D</strong>, usted acepta cumplir y estar sujeto a los siguientes términos y condiciones de servicio. Si no está de acuerdo con alguna parte de estos términos, no debe acceder al software.</p>
+
+                            <h3 style="color: #FFFFFF;">2. Descripción del Servicio (Licencia SaaS)</h3>
+                            <p>Plan Risk 3D es una plataforma de software en la nube bajo la modalidad SaaS (Software as a Service) que proporciona herramientas de modelado tridimensional de planos arquitectónicos y simulación de riesgos estructurales asistidos por Inteligencia Artificial (Mask R-CNN y Gemini). El usuario adquiere una licencia de acceso temporal según el plan seleccionado (Básico, Estrella o Premium) y no posee ningún derecho de propiedad sobre el código fuente, marcas o patentes del software.</p>
+
+                            <div style="border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 20px 0; background-color: rgba(255, 215, 0, 0.05);">
+                                <h3 style="color: #FFD700; margin-top: 0;">3. Limitación de Responsabilidad Técnica (Ingeniería Civil)</h3>
+                                <p style="margin-bottom: 0;"><strong>IMPORTANTE:</strong> Todos los cálculos, predicciones de riesgos, modelos 3D y reportes generados por la Inteligencia Artificial de Plan Risk 3D son herramientas de asistencia técnica computacional preliminar y <strong>NO reemplazan el criterio profesional</strong> de un Ingeniero Civil o Ingeniero Estructural colegiado. La empresa no asume responsabilidad civil ni legal por daños directos o indirectos, fallas de construcción, colapsos estructurales o multas derivadas de la ejecución de obras basadas únicamente en los análisis proporcionados por esta plataforma.</p>
+                            </div>
+
+                            <h3 style="color: #FFFFFF;">4. Uso Aceptable de la Cuenta</h3>
+                            <p>Usted se compromete a no utilizar el sistema para subir archivos corruptos, planos que violen derechos de autor de terceros o ejecutar scripts maliciosos. Queda prohibida la ingeniería inversa del motor de IA o el scraping automatizado de la base de datos de materiales y presupuestos de obra.</p>
+
+                            <h3 style="color: #FFFFFF;">5. Modificaciones del Servicio y Tarifas</h3>
+                            <p>La empresa se reserva el derecho de modificar o suspender temporal o permanentemente el servicio con o sin previo aviso. Los precios de los planes (180 Bs. y 220 Bs.) pueden estar sujetos a cambios, los cuales se notificarán con al menos 30 días de anticipación.</p>
+                        </div>
+                    </div>
+                    """
+                    text_tc = strip_tags(html_tc)
+                    msg_tc = EmailMultiAlternatives(subject_tc, text_tc, settings.DEFAULT_FROM_EMAIL, [usuario.email])
+                    msg_tc.attach_alternative(html_tc, "text/html")
+                    msg_tc.send(fail_silently=False)
+                    print(f"✅ Correo de Términos enviado a {usuario.email}")
+
+                    # 3. ENVIAR CORREO DE POLÍTICA DE PRIVACIDAD
+                    subject_pp = 'Política de Privacidad - PlanRisk3D 🔒'
+                    html_pp = f"""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #111; border-radius: 10px; overflow: hidden; background-color: #0B132B; color: #E0E0E0;">
+                        <div style="text-align: center; padding: 20px;">
+                            <h1 style="color: #FFD700; margin-bottom: 5px;">Política de Privacidad</h1>
+                            <p style="color: #A0A0A0; font-size: 12px; margin-top: 0;">Última actualización: Junio 2026</p>
+                            <hr style="border: 1px solid #FFD700; width: 50px; margin: 10px auto;">
+                        </div>
+                        <div style="padding: 20px; font-size: 14px; line-height: 1.6;">
+                            <h3 style="color: #FFFFFF;">1. Información que Recopilamos</h3>
+                            <p>Recopilamos la información estrictamente necesaria para brindar nuestros servicios SaaS de simulación estructural y control de obras:</p>
+                            <ul>
+                                <li><strong>Datos de Registro:</strong> Nombre completo, apellido, dirección de correo electrónico, contraseña (encriptada), teléfono y profesión.</li>
+                                <li><strong>Datos Técnicos:</strong> Archivos de planos arquitectónicos (PDF, PNG, JPG, CAD) que cargue en la plataforma y los modelos 3D resultantes.</li>
+                                <li><strong>Registros de Transacciones:</strong> Registros del plan de suscripción seleccionado e historial de pagos.</li>
+                            </ul>
+
+                            <h3 style="color: #FFFFFF;">2. Uso de la Información</h3>
+                            <p>Sus datos y planos se utilizan únicamente para procesar los modelos 3D estructurales mediante nuestra red neuronal Mask R-CNN, realizar análisis de daños vía Gemini AI y generar cómputos métricos de materiales. Nos comprometemos a no vender, alquilar ni compartir su información o archivos técnicos con terceros para fines comerciales o publicitarios.</p>
+
+                            <div style="border: 1px solid #FFD700; border-radius: 8px; padding: 15px; margin: 20px 0; background-color: rgba(255, 215, 0, 0.05);">
+                                <h3 style="color: #FFD700; margin-top: 0;">3. Seguridad y Auditoría en Blockchain</h3>
+                                <p style="margin-bottom: 0;">Para garantizar la inmutabilidad y transparencia de las auditorías de riesgo estructural generadas en la plataforma, registramos los hashes criptográficos (huellas digitales) de los reportes en una cadena de bloques (Blockchain). Esto asegura que sus análisis de seguridad no puedan ser alterados retroactivamente. Adicionalmente, toda la comunicación se cifra mediante protocolos SSL/TLS y las contraseñas se almacenan con algoritmos de hasheo seguros (bcrypt/argon2) en el backend de Django.</p>
+                            </div>
+
+                            <h3 style="color: #FFFFFF;">4. Sus Derechos de Acceso y Eliminación</h3>
+                            <p>Usted conserva el control total de sus datos. En cualquier momento, puede acceder a su perfil para modificar sus datos personales, descargar sus planos procesados o solicitar la eliminación total de su cuenta y archivos de nuestros servidores llamando al canal de soporte técnico.</p>
+                        </div>
+                    </div>
+                    """
+                    text_pp = strip_tags(html_pp)
+                    msg_pp = EmailMultiAlternatives(subject_pp, text_pp, settings.DEFAULT_FROM_EMAIL, [usuario.email])
+                    msg_pp.attach_alternative(html_pp, "text/html")
+                    msg_pp.send(fail_silently=False)
+                    print(f"✅ Correo de Privacidad enviado a {usuario.email}")
+
+                except Exception as e:
+                    print("❌ Error al enviar correos:", e)
+
             return Response(
                 UsuarioSerializer(usuario).data,
                 status=status.HTTP_201_CREATED

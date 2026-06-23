@@ -1,52 +1,81 @@
-<section class="min-h-[100svh] flex bg-gradient-to-b from-[#1B3C53]  to-[#456882] p-4 gap-2">
+<section class="min-h-[100svh] flex bg-gradient-to-b from-[#102434] to-[#253f54] p-4 gap-4 overflow-hidden relative">
+  <!-- Botón Menú Flotante -->
   <button (click)="menuOpen = !menuOpen"
-    class="absolute top-4 left-4 z-20 p-1 bg-red-600 text-white font-bold rounded-[5px] rounded-tl-[10px] shadow focus:outline-none">
-    {{ menuOpen ? '✕' : '☰' }}
+    class="absolute top-6 left-6 z-30 p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-xl shadow-lg focus:outline-none transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center">
+    @if(!menuOpen) {
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+    } @else {
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    }
   </button>
+
   <!-- SIDEBAR -->
-  <!--con el class.hidden sacamos del doom el elemento-->
-  <aside [class.w-0]="!menuOpen" [class.opacity-0]="!menuOpen" [class.w-52]="menuOpen" [class.opacity-100]="menuOpen"
-    class="overflow-hidden rounded-[10px] flex flex-col p-4 gap-4
-         bg-gradient-to-b from-[#447D9B] to-[#EEEFE0] text-white
-         transition-[width,opacity] duration-300 ease-in-out">
-    <!-- Foto -->
-    <div class="w-full h-32 bg-gray-300 rounded flex items-center justify-center text-xs text-black border border-[#06273d] mt-5
-         bg-cover bg-center bg-no-repeat" [style.background-image]="'url(' + currentUser().url + ')'">
+  <aside [class.w-0]="!menuOpen" [class.opacity-0]="!menuOpen" [class.w-64]="menuOpen" [class.opacity-100]="menuOpen" [class.ml-0]="menuOpen" [class.-ml-4]="!menuOpen"
+    class="overflow-hidden rounded-2xl flex flex-col p-5 gap-6
+         bg-[#0d1e2b]/95 backdrop-blur-2xl border border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.5)] text-white
+         transition-all duration-300 ease-in-out relative z-20 shrink-0 h-[calc(100vh-2rem)]">
+    
+    <!-- Perfil Rediseñado -->
+    <div class="w-full mt-10 flex flex-col items-center justify-center gap-3">
+      <div class="relative group cursor-pointer">
+        <div class="absolute inset-0 bg-indigo-500 rounded-full blur opacity-40 group-hover:opacity-70 transition-opacity"></div>
+        <div class="w-24 h-24 rounded-full border-2 border-white/20 p-1 relative z-10 bg-[#0d1e2b]">
+          <div class="w-full h-full rounded-full bg-cover bg-center bg-no-repeat" 
+               [style.background-image]="'url(' + currentUser().url + ')'">
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-2 w-full px-2">
+        <h3 class="font-bold text-white tracking-wide truncate">{{ currentUser().nombre || 'Usuario' }}</h3>
+        <p class="text-xs text-indigo-300 font-medium uppercase tracking-widest mt-1 truncate">{{ currentUser().rol || 'Plan' }}</p>
+      </div>
     </div>
 
-
+    <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
     <!-- Navegación -->
-    <nav class="flex flex-col gap-4 flex-1 justify-start pt-4 ">
-      <a [routerLink]="['perfil']" routerLinkActive="scale-[1.1] bg-[#355c75]"
-        class="rounded bg-[#1B3C53] text-white font-semibold text-sm text-center py-2 hover:bg-[#355c75] hover:scale-[1.05]">
-        PERFIL
+    <nav class="flex flex-col gap-2 flex-1 pt-2">
+      <a [routerLink]="['perfil']" routerLinkActive="bg-white/10 text-white shadow-inner border-l-4 border-indigo-400 font-semibold translate-x-1"
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200 border-l-4 border-transparent hover:translate-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+        {{ ts.t('sidebar.profile') }}
       </a>
-      <a [routerLink]="['dashboard']" routerLinkActive="scale-[1.1] bg-[#355c75]"
-        class="rounded bg-[#1B3C53] text-white font-semibold text-sm text-center py-2 hover:bg-[#355c75] hover:scale-[1.05]">
-        PROYECTOS
+      
+      <a [routerLink]="['dashboard']" routerLinkActive="bg-white/10 text-white shadow-inner border-l-4 border-emerald-400 font-semibold translate-x-1"
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200 border-l-4 border-transparent hover:translate-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" /></svg>
+        {{ ts.t('sidebar.projects') }}
       </a>
-      <a [routerLink]="['editor']" routerLinkActive="scale-[1.1] bg-[#355c75]"
-        class="rounded bg-[#1B3C53] text-white font-semibold text-sm text-center py-2 hover:bg-[#355c75] hover:scale-[1.05]">
-        EDITOR
+      
+      <a [routerLink]="['editor']" routerLinkActive="bg-white/10 text-white shadow-inner border-l-4 border-amber-400 font-semibold translate-x-1"
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200 border-l-4 border-transparent hover:translate-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" /></svg>
+        {{ ts.t('sidebar.editor') }}
       </a>
-      <a [routerLink]="['pago']" routerLinkActive="scale-[1.1] bg-[#355c75]"
-        class="rounded bg-[#1B3C53] text-white font-semibold text-sm text-center py-2 hover:bg-[#355c75] hover:scale-[1.05]">
-        PAGO
-      </a>
+      
     </nav>
 
-    <!-- Salir -->
-    <div class="mt-auto">
+    <!-- Botón Idioma + Salir -->
+    <div class="mt-auto flex flex-col gap-2">
+      <!-- Toggle idioma -->
+      <button (click)="ts.toggle()" [title]="ts.t('lang.tooltip')"
+        class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 border border-white/10 text-amber-400 font-bold text-xs tracking-wider hover:bg-white/10 transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+        </svg>
+        {{ ts.t('lang.switch') }}
+      </button>
+
       <button (click)="logout()"
-        class="rounded bg-red-600 text-white font-bold text-sm text-center py-2 w-full hover:bg-red-700 block">
-        SALIR
+        class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm shadow-[0_0_15px_rgba(225,29,72,0.4)] hover:shadow-[0_0_25px_rgba(225,29,72,0.6)] hover:-translate-y-1 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+        {{ ts.t('sidebar.logout') }}
       </button>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <main class="flex-1 min-h-full ">
+  <main class="flex-1 min-h-full relative z-10 flex flex-col w-full h-[calc(100vh-2rem)] overflow-y-auto">
     <router-outlet></router-outlet>
   </main>
 </section>
