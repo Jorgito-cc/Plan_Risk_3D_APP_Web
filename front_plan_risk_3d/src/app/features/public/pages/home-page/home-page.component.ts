@@ -13,6 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Modelo3D } from '../../../../models/classes/model3D';
+import { environment } from '../../../../../environments/environment';
 
 
 @Component({
