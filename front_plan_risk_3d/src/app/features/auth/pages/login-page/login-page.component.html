@@ -2,21 +2,24 @@
   <!-- Sección con fondo y altura calculada -->
   <section class="relative flex-1 bg-cover bg-center bg-[url(assets/casa.png)] overflow-hidden"
     style="min-height: calc(100svh - 8rem);">
-    
+
     <!-- Capa oscura + blur + ambient light glow -->
     <div class="absolute inset-0 bg-[#0a0f1d]/90 backdrop-blur-[4px]"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full filter blur-[120px] pointer-events-none"></div>
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full filter blur-[120px] pointer-events-none">
+    </div>
 
     <!-- Contenedor scrollable en móviles -->
     <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center justify-center px-4 py-10 sm:px-6">
-      
+
       <!-- Card de login -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()"
         class="w-full max-w-md overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10 transition-all hover:border-amber-500/30">
-        
+
         <!-- Logo / Marca -->
         <div class="flex flex-col items-center mb-8">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-amber-500/20 mb-3 animate-pulse">
+          <div
+            class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-amber-500/20 mb-3 animate-pulse">
             P
           </div>
           <h2 class="text-xs font-bold tracking-widest text-amber-400 uppercase">{{ ts.t('login.welcome') }}</h2>
@@ -25,18 +28,20 @@
 
         <!-- Campo: Correo -->
         <div class="mb-5">
-          <label for="email" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{ ts.t('login.email') }}</label>
+          <label for="email" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{
+            ts.t('login.email') }}</label>
           <input formControlName="email" type="email" id="email"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
             [placeholder]="ts.t('login.emailPlaceholder')" />
           @if (isValidField('email')) {
-            <span class="text-red-400 text-xs mt-1 block font-medium">{{ ts.t('login.emailError') }}</span>
+          <span class="text-red-400 text-xs mt-1 block font-medium">{{ ts.t('login.emailError') }}</span>
           }
         </div>
 
         <!-- Campo: Contraseña -->
         <div class="mb-8">
-          <label for="password" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{ ts.t('login.password') }}</label>
+          <label for="password" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">{{
+            ts.t('login.password') }}</label>
           <input formControlName="password" type="password" id="password"
             class="w-full rounded-lg border border-slate-800 bg-slate-950/40 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20"
             placeholder="••••••••" />
@@ -50,10 +55,10 @@
 
         <!-- Links inferiores -->
         <div class="mt-2 flex items-center justify-between text-xs border-t border-slate-800/80 pt-6">
-          <a routerLink="/recover"
-            class="text-slate-400 hover:text-white transition duration-150">{{ ts.t('login.forgot') }}</a>
-          <a routerLink="/register"
-            class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">{{ ts.t('login.register') }}</a>
+          <a routerLink="/recover" class="text-slate-400 hover:text-white transition duration-150">{{
+            ts.t('login.forgot') }}</a>
+          <a routerLink="/register" class="text-amber-400 hover:text-amber-300 font-bold transition duration-150">{{
+            ts.t('login.register') }}</a>
         </div>
       </form>
     </div>
