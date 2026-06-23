@@ -16,8 +16,11 @@ CHAIN_ID = 80002  # Polygon Amoy testnet
 
 # === CONEXIÓN WEB3 ===
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
-if not w3.is_connected():
-    raise RuntimeError("❌ No se pudo conectar a Polygon Amoy RPC")
+try:
+    if not w3.is_connected():
+        print("Warning: No se pudo conectar a Polygon Amoy RPC")
+except Exception as e:
+    print(f"Warning: Error al conectar a Polygon Amoy RPC: {e}")
 
 # === CARGAR CUENTA ===
 acct = None
@@ -25,9 +28,9 @@ if PRIVATE_KEY:
     try:
         acct = w3.eth.account.from_key(PRIVATE_KEY)
     except Exception as e:
-        print(f"⚠️ Error cargando cuenta Web3: {e}")
+        print(f"Warning: Error cargando cuenta Web3: {e}")
 else:
-    print("⚠️ PRIVATE_KEY no configurada en el entorno. Funciones onchain pueden fallar.")
+    print("Warning: PRIVATE_KEY no configurada en el entorno. Funciones onchain pueden fallar.")
 
 # === ABI DEL CONTRATO ===
 ABI = [
@@ -86,9 +89,9 @@ if CONTRACT_ADDR:
             abi=ABI
         )
     except Exception as e:
-        print(f"⚠️ Error cargando contrato Web3: {e}")
+        print(f"Warning: Error cargando contrato Web3: {e}")
 else:
-    print("⚠️ CONTRACT_ADDR no configurada. Funciones onchain pueden fallar.")
+    print("Warning: CONTRACT_ADDR no configurada. Funciones onchain pueden fallar.")
 
 
 def register_on_chain(job_id, cid_img, cid_json, cid_glb,
@@ -107,14 +110,14 @@ def register_on_chain(job_id, cid_img, cid_json, cid_glb,
     """
     try:
         if acct is None:
-            print("⚠️ Cuenta no inicializada (PRIVATE_KEY faltante). Saltando registro blockchain.")
+            print("Warning: Cuenta no inicializada (PRIVATE_KEY faltante). Saltando registro blockchain.")
             return None
 
         if contract is None:
-            print("⚠️ Contrato no inicializado (CONTRACT_ADDR faltante). Saltando registro blockchain.")
+            print("Warning: Contrato no inicializado (CONTRACT_ADDR faltante). Saltando registro blockchain.")
             return None
 
-        print("🔗 Iniciando registro en blockchain...")
+        print("[Web3] Iniciando registro en blockchain...")
 
         nonce = w3.eth.get_transaction_count(acct.address)
 
@@ -152,13 +155,13 @@ def register_on_chain(job_id, cid_img, cid_json, cid_glb,
 
         signed = acct.sign_transaction(tx)
         tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
-        print(f"✅ Transacción enviada: {tx_hash.hex()}")
+        print(f"[Web3] Transaccion enviada: {tx_hash.hex()}")
         url = f"https://amoy.polygonscan.com/tx/{tx_hash.hex()}"
-        print(f"🔍 Ver en {url}")
+        print(f"[Web3] Ver en {url}")
         return tx_hash.hex()
 
     except Exception as e:
-        print(f"❌ Error registrando en blockchain: {e}")
+        print(f"[Web3] Error registrando en blockchain: {e}")
         return None
 
 

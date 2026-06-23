@@ -98,8 +98,8 @@ def process_and_save_glb(job, det):
         job.plan_image.close()
         sha_img = hashlib.sha256(img_bytes).hexdigest()
         
-        print(f"🔍 Hash de imagen calculado: {sha_img}")
-        print(f"📏 Tamaño de imagen: {len(img_bytes)} bytes")
+        print(f"[Info] Hash de imagen calculado: {sha_img}")
+        print(f"[Info] Tamano de imagen: {len(img_bytes)} bytes")
 
     # (Opcional) Subir a IPFS
     # TODO: Integrar ipfs_client.py para CIDs reales
@@ -121,13 +121,13 @@ def process_and_save_glb(job, det):
             cid_meta
         )
         if tx_hash:
-            print(f"✅ Modelo registrado en blockchain. Tx: {tx_hash}")
+            print(f"[Blockchain] Modelo registrado en blockchain. Tx: {tx_hash}")
             print(
-                f"🔍 Ver en: https://amoy.polygonscan.com/tx/{tx_hash}"
+                f"[Blockchain] Ver en: https://amoy.polygonscan.com/tx/{tx_hash}"
             )
             job.blockchain_tx = tx_hash
     except Exception as e:
-        print(f"⚠️ No se pudo registrar en blockchain: {e}")
+        print(f"Warning: No se pudo registrar en blockchain: {e}")
 
     # Guardar job
     job.save()
