@@ -33,11 +33,24 @@ _graph = None
 def load_model_once():
     """Cargar modelo Mask R-CNN una sola vez."""
     global _model, _graph
-    if _model is None:
-        weights_path = os.path.join(WEIGHTS_FOLDER, WEIGHTS_FILE_NAME)
-        _model = MaskRCNN(mode='inference', model_dir=MODEL_DIR, config=_cfg)
-        _model.load_weights(weights_path, by_name=True)
-        _graph = tf.get_default_graph()  # TF1.x
+    if _model is None or _graph is None:
+        try:
+            weights_path = os.path.join(WEIGHTS_FOLDER, WEIGHTS_FILE_NAME)
+            print(f"[Inference] Cargando pesos desde: {weights_path}")
+            model = MaskRCNN(mode='inference', model_dir=MODEL_DIR, config=_cfg)
+            model.load_weights(weights_path, by_name=True)
+            graph = tf.get_default_graph()  # TF1.x
+            
+            # Asignar a variables globales tras carga exitosa
+            _model = model
+            _graph = graph
+            print("[Inference] Modelo cargado exitosamente.")
+        except Exception as e:
+            # Resetear estado para evitar que llamadas posteriores asuman que se cargo
+            _model = None
+            _graph = None
+            print(f"[Inference] Error al cargar el modelo: {e}")
+            raise e
     return _model, _graph, _cfg
 
 CLASS_ID_TO_NAME = {1: "wall", 2: "window", 3: "door"}
