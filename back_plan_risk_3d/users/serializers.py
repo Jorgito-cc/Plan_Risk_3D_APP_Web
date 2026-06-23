@@ -27,7 +27,7 @@ class RegistroSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Crear usuario con password hasheado."""
-        print("📥 Datos recibidos en el serializer:", validated_data)
+        print("[Serializer] Datos recibidos:", validated_data)
         validated_data['password'] = make_password(
             validated_data['password']
         )

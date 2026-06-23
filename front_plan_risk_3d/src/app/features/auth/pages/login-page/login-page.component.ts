@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
@@ -18,6 +18,7 @@ import { TranslateService } from '../../../i18n/translate.service';
 export class LoginPageComponent {
   private authService = inject(AuthService);
   private formBuilder = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   ts = inject(TranslateService);
@@ -42,7 +43,8 @@ export class LoginPageComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: any) => {
         console.log(response);
-        this.router.navigate(['/private']);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/private';
+        this.router.navigateByUrl(returnUrl);
         this.toastr.success('Inicio de sesion exitoso.', 'Bienvenido a PlanRisk 3D !!', {
           timeOut: 3000,
         });

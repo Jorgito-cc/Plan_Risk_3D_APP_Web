@@ -56,9 +56,8 @@ class RegistroView(generics.CreateAPIView):
         if serializer.is_valid():
             usuario = serializer.save()
 
-            # Enviar correo de bienvenida si es de gmail o uagrm.edu.bo
-            dominios_permitidos = ('@gmail.com', '@uagrm.edu.bo')
-            if usuario.email.lower().endswith(dominios_permitidos):
+            # Enviar correos de bienvenida, terminos y privacidad
+            if usuario.email:
                 subject = '¡Bienvenido a PlanRisk3D! 🚀'
                 
                 # HTML content con datos de la empresa, planes y funciones
@@ -118,7 +117,7 @@ class RegistroView(generics.CreateAPIView):
                     )
                     msg.attach_alternative(html_content, "text/html")
                     msg.send(fail_silently=False)
-                    print(f"✅ Correo de bienvenida enviado a {usuario.email}")
+                    print(f"[Email] Correo de bienvenida enviado a {usuario.email}")
 
                     # 2. ENVIAR CORREO DE TÉRMINOS Y CONDICIONES
                     subject_tc = 'Términos y Condiciones - PlanRisk3D 📜'
@@ -153,7 +152,7 @@ class RegistroView(generics.CreateAPIView):
                     msg_tc = EmailMultiAlternatives(subject_tc, text_tc, settings.DEFAULT_FROM_EMAIL, [usuario.email])
                     msg_tc.attach_alternative(html_tc, "text/html")
                     msg_tc.send(fail_silently=False)
-                    print(f"✅ Correo de Términos enviado a {usuario.email}")
+                    print(f"[Email] Correo de Terminos enviado a {usuario.email}")
 
                     # 3. ENVIAR CORREO DE POLÍTICA DE PRIVACIDAD
                     subject_pp = 'Política de Privacidad - PlanRisk3D 🔒'
@@ -190,16 +189,16 @@ class RegistroView(generics.CreateAPIView):
                     msg_pp = EmailMultiAlternatives(subject_pp, text_pp, settings.DEFAULT_FROM_EMAIL, [usuario.email])
                     msg_pp.attach_alternative(html_pp, "text/html")
                     msg_pp.send(fail_silently=False)
-                    print(f"✅ Correo de Privacidad enviado a {usuario.email}")
+                    print(f"[Email] Correo de Privacidad enviado a {usuario.email}")
 
                 except Exception as e:
-                    print("❌ Error al enviar correos:", e)
+                    print("[Error] Error al enviar correos:", e)
 
             return Response(
                 UsuarioSerializer(usuario).data,
                 status=status.HTTP_201_CREATED
             )
-        print("❌ ERRORES DE SERIALIZER:", serializer.errors)
+        print("[Error] ERRORES DE SERIALIZER:", serializer.errors)
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
