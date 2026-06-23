@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
+import { environment } from '../../../../environments/environment';
+
 interface Message {
   sender: 'bot' | 'user';
   text: string;
@@ -19,7 +21,7 @@ export class ChatbotComponent implements AfterViewChecked {
   isOpen = false;
   isLoading = false;
   inputValue = '';
-  
+
   messages: Message[] = [
     {
       sender: 'bot',
@@ -29,7 +31,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -47,7 +49,7 @@ export class ChatbotComponent implements AfterViewChecked {
       if (this.messagesContainer) {
         this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   async handleSend() {
@@ -59,7 +61,7 @@ export class ChatbotComponent implements AfterViewChecked {
     this.isLoading = true;
 
     // We use the backend URL configured for Django
-    const apiUrl = 'http://localhost:8000/api/suggestion_risk/chat/';
+    const apiUrl = `${environment.endpoint}api/suggestion_risk/chat/`;
 
     this.http.post<any>(apiUrl, { query: userText }).subscribe({
       next: (data) => {

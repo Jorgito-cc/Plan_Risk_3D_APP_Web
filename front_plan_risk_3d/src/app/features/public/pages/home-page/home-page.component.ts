@@ -44,7 +44,7 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      fetch('http://localhost:8000/api/users/admin/planes-config/')
+      fetch(`${environment.endpoint}api/users/admin/planes-config/`)
         .then(res => res.json())
         .then(data => {
           if (data.usuario_estrella) this.precioEstrella = data.usuario_estrella;
