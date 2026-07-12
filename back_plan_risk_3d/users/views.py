@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count, Q
 from django.utils import timezone
-from users.models import Usuario, PlanConfig
+from users.models import Usuario, PlanConfig, MensajeContacto
 from plans.models import Plan3DJob
 from .auth import JWTAuthentication
 from .serializers import RegistroSerializer, UsuarioSerializer
@@ -479,3 +479,124 @@ class AdminHistorialPlanosView(APIView):
             })
             
         return Response(detalles_planos)
+
+
+class MensajeContactoView(APIView):
+    """Vista para crear (público) y listar (admin) mensajes de contacto."""
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_authenticators(self):
+        if self.request.method == 'POST':
+            return []
+        return [JWTAuthentication()]
+
+    def post(self, request):
+        nombre = request.data.get("nombre")
+        correo = request.data.get("correo")
+        mensaje = request.data.get("mensaje")
+        asunto = request.data.get("asunto", "Nuevo mensaje de contacto - Plan Risk 3D")
+
+        if not nombre or not correo or not mensaje:
+            return Response(
+                {"error": "Todos los campos (nombre, correo, mensaje) son obligatorios."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 1. Guardar en la base de datos
+        msg = MensajeContacto.objects.create(
+            nombre=nombre,
+            correo=correo,
+            mensaje=mensaje,
+            asunto=asunto
+        )
+
+        # 2. Enviar correo a jorgitochoque007@gmail.com
+        from django.core.mail import EmailMultiAlternatives
+        from django.utils.html import strip_tags
+        
+        email_destinatario = 'jorgitochoque007@gmail.com'
+        subject_mail = f"Contacto: {asunto}"
+        
+        html_mail = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+            <div style="background-color: #003366; padding: 20px; text-align: center; color: white;">
+                <h2>Nuevo Mensaje de Contacto</h2>
+                <p>Recibido desde el sitio web PlanRisk3D</p>
+            </div>
+            <div style="padding: 20px; color: #333; line-height: 1.6;">
+                <p><strong>Nombre completo:</strong> {nombre}</p>
+                <p><strong>Correo electrónico:</strong> <a href="mailto:{correo}">{correo}</a></p>
+                <p><strong>Asunto:</strong> {asunto}</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <p><strong>Mensaje:</strong></p>
+                <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #003366; white-space: pre-wrap;">
+                    {mensaje}
+                </div>
+            </div>
+            <div style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #777;">
+                Este es un correo automático del sistema PlanRisk3D.
+            </div>
+        </div>
+        """
+        text_mail = strip_tags(html_mail)
+
+        try:
+            email_msg = EmailMultiAlternatives(
+                subject_mail,
+                text_mail,
+                settings.DEFAULT_FROM_EMAIL,
+                [email_destinatario]
+            )
+            email_msg.attach_alternative(html_mail, "text/html")
+            email_msg.send(fail_silently=False)
+        except Exception as e:
+            # Imprimir el error pero no fallar el flujo principal (el mensaje ya se guardó en DB)
+            print(f"[Email Error] No se pudo enviar el correo de contacto: {e}")
+
+        return Response(
+            {
+                "message": "Mensaje enviado y registrado con éxito.",
+                "id": msg.id
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    def get(self, request):
+        # Asegurar que el usuario autenticado sea administrador
+        if request.user.rol.lower() not in ['administrador', 'admin']:
+            return Response({"error": "No autorizado"}, status=status.HTTP_403_FORBIDDEN)
+
+        mensajes = MensajeContacto.objects.all().order_by('-fecha_envio')
+        data = [
+            {
+                "id": m.id,
+                "nombre": m.nombre,
+                "correo": m.correo,
+                "asunto": m.asunto,
+                "mensaje": m.mensaje,
+                "created_at": m.fecha_envio.isoformat() if m.fecha_envio else None
+            }
+            for m in mensajes
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class MensajeContactoDetailView(APIView):
+    """Vista para eliminar mensajes de contacto."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.rol.lower() not in ['administrador', 'admin']:
+            return Response({"error": "No autorizado"}, status=status.HTTP_403_FORBIDDEN)
+            
+        try:
+            msg = MensajeContacto.objects.get(pk=pk)
+            msg.delete()
+            return Response({"message": "Mensaje eliminado con éxito."}, status=status.HTTP_200_OK)
+        except MensajeContacto.DoesNotExist:
+            return Response({"error": "Mensaje no encontrado."}, status=status.HTTP_404_NOT_FOUND)

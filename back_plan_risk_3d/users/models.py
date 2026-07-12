@@ -65,3 +65,15 @@ class PlanConfig(models.Model):
 
     def __str__(self):
         return f"{self.rol}: Bs. {self.precio_mensual}"
+
+
+class MensajeContacto(models.Model):
+    """Modelo para almacenar mensajes de contacto enviados desde la web."""
+    nombre = models.CharField(max_length=150)
+    correo = models.EmailField()
+    asunto = models.CharField(max_length=255, default='Nuevo mensaje de contacto - Plan Risk 3D')
+    mensaje = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.correo} - {self.asunto}"

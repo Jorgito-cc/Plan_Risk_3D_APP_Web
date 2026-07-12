@@ -1,7 +1,11 @@
 from django.urls import path
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UsuarioViewSet, RegistroView, LoginView, LogoutView, update_usuario, DashboardKPIsView, PlanConfigView, AdminHistorialPlanosView
+from .views import (
+    UsuarioViewSet, RegistroView, LoginView, LogoutView, update_usuario, 
+    DashboardKPIsView, PlanConfigView, AdminHistorialPlanosView, 
+    MensajeContactoView, MensajeContactoDetailView
+)
 from .pagues import (
     create_checkout_session,
     stripe_webhook,
@@ -20,6 +24,9 @@ urlpatterns = [
     path('admin/kpis/', DashboardKPIsView.as_view(), name='admin-kpis'),
     path('admin/planes-config/', PlanConfigView.as_view(), name='admin-planes-config'),
     path('admin/historial-planos/', AdminHistorialPlanosView.as_view(), name='admin-historial-planos'),
+    path('contacto/', MensajeContactoView.as_view(), name='contacto-crear'),
+    path('admin/mensajes/', MensajeContactoView.as_view(), name='admin-mensajes-listar'),
+    path('admin/mensajes/<int:pk>/', MensajeContactoDetailView.as_view(), name='admin-mensajes-detalle'),
 
     # Stripe Checkout
     path('stripe/create-checkout-session/', create_checkout_session, name='stripe-checkout'),
