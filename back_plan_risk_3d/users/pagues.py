@@ -21,7 +21,7 @@ STRIPE_SECRET_KEY = (
 stripe.api_key = STRIPE_SECRET_KEY
 
 # URLs del frontend React para redirección post-pago
-REACT_FRONTEND_URL = "https://corporativosw.netlify.app"
+REACT_FRONTEND_URL = "https://corporativosw2mesa.netlify.app"
 
 # Mapeo de planes a precios y roles
 PLAN_CONFIG = {
