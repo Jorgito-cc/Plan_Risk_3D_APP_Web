@@ -17,17 +17,15 @@ def seed():
     
     # 1. Asegurar PlanConfig
     plans_data = [
-        {"nombre": "Plan Free", "precio": 0.00, "limite_planos": "3 planos/mes", "soporte": "Básico"},
-        {"nombre": "Plan Estrella", "precio": 150.00, "limite_planos": "25 planos/mes", "soporte": "Detección IA Mask R-CNN"},
-        {"nombre": "Plan Premium", "precio": 350.00, "limite_planos": "Ilimitado", "soporte": "IA + Blockchain + n8n"}
+        {"rol": "usuario_normal", "precio_mensual": 0.00},
+        {"rol": "usuario_estrella", "precio_mensual": 150.00},
+        {"rol": "usuario_premium", "precio_mensual": 350.00}
     ]
     for p in plans_data:
         PlanConfig.objects.get_or_create(
-            nombre=p["nombre"],
+            rol=p["rol"],
             defaults={
-                "precio": p["precio"],
-                "limite_planos": p["limite_planos"],
-                "soporte": p["soporte"]
+                "precio_mensual": p["precio_mensual"]
             }
         )
     print("PlanConfig verificado.")
@@ -116,7 +114,7 @@ def seed():
         return
         
     job_instances = []
-    glb_url = "https://defensasw2.jorgechoquecalle.engineer/media/outputs/job_1_1786320401.glb"
+    glb_url = "outputs/job_1_1786320401.glb"
     
     for i in range(1, 2001):
         user = random.choice(client_users)
